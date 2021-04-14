@@ -31,7 +31,7 @@ used_sample_ids = set()
 used_song_names = set()
 track_id_names = {}
 track_name_ids = {}
-    
+
 windy_intro = False
 SFXTRACKS = []
 APPENDTRACKS = []
@@ -54,22 +54,22 @@ tracklist_spoiler = {}
 def resource_path(rel):
     base = getattr(sys, '_MEIPASS', BASEPATH)
     return os.path.normpath(os.path.join(base, SUBPATH, rel))
-    
+
 def open_resource(fn, *args, **kwargs):
     if os.path.isabs(fn):
         print(f"warning: {fn}: resource paths should be relative")
     else:
         fn = resource_path(fn)
     return open(fn, *args, **kwargs)
-    
+
 def asset_path(rel):
     return os.path.normpath(os.path.join(BASEPATH, SUBPATH, rel))
-    
+
 def open_asset(fn, *args, **kwargs):
     if not os.path.isabs(fn):
         fn = asset_path(fn)
     return open(fn, *args, **kwargs)
-    
+
 def fallback_path(rel, ext=""):
     if ext and rel.endswith(ext):
         ext = ""
@@ -77,16 +77,16 @@ def fallback_path(rel, ext=""):
     if not os.path.exists(p + ext):
         p = resource_path(rel)
     return p
-    
+
 def open_fallback(fn, *args, **kwargs):
     if not os.path.isabs(fn):
         fn = fallback_path(fn)
     return open(fn, *args, **kwargs)
-    
+
 class TrackMetadata:
     def __init__(self, file="", title="", album="", composer="", arranged="", menuname=""):
         self.file, self.title, self.album, self.composer, self.arranged, self.menuname = title, album, composer, arranged, menuname
-        
+
 class TracklistEntry:
     def __init__(self, name):
         self.slotname = name
@@ -97,39 +97,39 @@ class TracklistEntry:
         self.variant = None
         self.is_legacy = False
         self.is_fixed = True
-        
+
 class Tracklist:
     def __init__(self):
         self.data = {}
-        
+
     def __getitem__(self, key):
         return self.data[key]
-        
+
     def __setitem__(self, key, value):
         self.data[key] = value
-        
+
     def dupe_check(self, name, module="unknown"):
         if name in self.data:
             print(f"warning: in {module}: duplicate tracklist data for {name}, overwriting entry with file {self[name].file}")
             return True
         return False
-        
+
     def add_direct(self, name, mml):
         self[name] = TracklistEntry(name)
         self[name].file = ""
         self[name].mml = mml
-        
+
     def add_fixed(self, name):
         self.dupe_check(name, "add_fixed")
         self[name] = TracklistEntry(name)
         self[name].file = os.path.join(STATIC_MUSIC_PATH, name + '.mml')
         used_song_names.add(song_usage_id(name))
-        
+
     def add_random(self, name, pool, idx=None, allow_duplicates=False):
         self.dupe_check(name, "add_random")
         self[name] = TracklistEntry(name)
         self[name].is_fixed = False
-        
+
         if not allow_duplicates:
             pool = [p for p in pool if song_usage_id(p) not in used_song_names]
         if len(pool) < 1:
@@ -137,7 +137,7 @@ class Tracklist:
             #input() #debug, #TODO remove
             return False
         song = random.choice(pool)
-        
+
         # check various possible file locations over various possible variants
         if idx is None:
             idx = track_name_ids[name]
@@ -192,24 +192,24 @@ class Tracklist:
                 if searchpath in [LEGACY_MUSIC_PATH, resource_path(LEGACY_MUSIC_PATH)]:
                     self[name].is_legacy = True
                 break
-        
+
         if not found:
             print(f"warning: in add_random: file not found: {song + '.mml'}")
             return False
-        
+
         self[name].mml = mml
         self[name].file = os.path.join(searchpath, file_to_check)
         self[name].variant = variant if variant else None
         used_song_names.add(song_usage_id(song))
         add_to_spoiler(name, tl=self)
         return True
-                    
+
 def song_usage_id(name):
     name = os.path.splitext(os.path.basename(name))[0]
     if name.count("_") <= 1:
         return name
     return "_".join(name.split("_")[0:2])
-        
+
 def song_variant_id(name, idx):
     if name.endswith("_sfx") or name.endswith("_vic"):
         name = name[:-4]
@@ -224,7 +224,7 @@ def song_variant_id(name, idx):
     else:
         return name, ""
 
-def init_playlist(fn=DEFAULT_PLAYLIST_FILE):            
+def init_playlist(fn=DEFAULT_PLAYLIST_FILE):
     playlist_parser = configparser.ConfigParser()
     plfile = playlist_parser.read(fallback_path(os.path.join(PLAYLIST_PATH, fn)))
     if not plfile:
@@ -272,13 +272,13 @@ def add_to_spoiler(track, mml=None, fn=None, tl=None):
         mml = song.mml
     if not fn:
         fn = song.file
-        
+
     dir, fn = os.path.split(fn)
     dir = dir.split(os.path.sep)
     fn = os.path.splitext(fn)[0]
-    
+
     track_name_width = max([len(s) for s in track_id_names.values()]) if track_id_names else 0
-    
+
     try:
         id = track_name_ids[track]
     except KeyError:
@@ -286,7 +286,7 @@ def add_to_spoiler(track, mml=None, fn=None, tl=None):
             id = max([1000] + list(tracklist_spoiler.keys())) + 1
         else:
             id = 1000
-        
+
     title = re.search("(?<=#TITLE )([^;\n]*)", mml, re.IGNORECASE)
     album = re.search("(?<=#ALBUM )([^;\n]*)", mml, re.IGNORECASE)
     composer = re.search("(?<=#COMPOSER )([^;\n]*)", mml, re.IGNORECASE)
@@ -295,20 +295,20 @@ def add_to_spoiler(track, mml=None, fn=None, tl=None):
     album = album.group(0) if album else "??"
     composer = composer.group(0) if composer else "??"
     arranged = arranged.group(0) if arranged else "??"
-    
+
     if song and song.variant and song.variant != "_default_":
         variant = song.variant
         vartext = f":{song.variant}"
     else:
         vartext = ""
         variant = None
-        
+
     dirtext = ""
     if "legacy" in dir:
         dirtext += " [Legacy]"
     if "dm" in dir:
         dirtext += " [DM]"
-    
+
     indent = " " * (track_name_width - 4)
     text = (f"{track:<{track_name_width}} -> {fn}{vartext}{dirtext}" "\n"
             + indent + f"{album} -- {title}" "\n"
@@ -317,9 +317,9 @@ def add_to_spoiler(track, mml=None, fn=None, tl=None):
     if track in track_name_ids:
         menuname = get_jukebox_title(mml, fn)
         text += indent + f"(Jukebox title: {menuname})" + "\n"
-    
+
     tracklist_spoiler[id] = (track, fn, variant, text)
-    
+
 def append_legacy_imports(mml, iset, raw_inst=False):
     if raw_inst:
         inst = []
@@ -329,29 +329,29 @@ def append_legacy_imports(mml, iset, raw_inst=False):
             inst.append(b)
     else:
         inst = iset
-        
+
     if not legacy_instmap:
-        legacy_parser = configparser.ConfigParser()   
+        legacy_parser = configparser.ConfigParser()
         legacy_parser.read(resource_path(os.path.join(TABLE_PATH,'brr_legacy.txt')))
         for k, v in legacy_parser.items("Samples"):
             try:
                 legacy_instmap[int(k, 16)] = v
             except ValueError:
                 pass
-                
+
     appendix = ""
     for i, id in enumerate(inst):
         if id > 0:
             appendix += f"\n#BRR 0x{i+0x20:02X}; {os.path.join(LEGACY_LOADBRR_PATH, legacy_instmap[id])}\n"
     mml += appendix
     return mml
-    
+
 brr_size_cache = {}
 
 def get_spc_memory_usage(mml, custompath=CUSTOM_MUSIC_PATH, variant="_default_"):
     raw_iset = mml_to_akao(mml, variant=variant, inst_only=True)
     imports = get_brr_imports(mml, variant)
-    
+
     if not instmap:
         sample_parser = configparser.ConfigParser()
         sample_parser.read(resource_path(os.path.join(TABLE_PATH, 'brr_samples.txt')))
@@ -360,7 +360,7 @@ def get_spc_memory_usage(mml, custompath=CUSTOM_MUSIC_PATH, variant="_default_")
                 instmap[int(k, 16)] = v
             except ValueError:
                 pass
-    
+
     brrsize = []
     for i in range(0x10):
         prgid = i + 0x20
@@ -384,18 +384,18 @@ def get_spc_memory_usage(mml, custompath=CUSTOM_MUSIC_PATH, variant="_default_")
             size = os.path.getsize(fn) // 9
             brr_size_cache[fn] = size
         brrsize.append(size)
-        
+
     return sum(brrsize)
 
 ############ variant processing
 
 def apply_variant(mml, type, name="", variant="_default_", check_size=False):
-    
+
     def wind_increment(m):
         val = int(m.group(1))
         if val in [1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14]:
             val += 2
-        elif val in [7, 8, 15, 16]: 
+        elif val in [7, 8, 15, 16]:
             val -= 6
         return "{{{}}}".format(val)
         return m.group(0)
@@ -403,7 +403,7 @@ def apply_variant(mml, type, name="", variant="_default_", check_size=False):
     use_sfxv = False
     append_mml = None
     orig_mml = mml
-    
+
     if type == "rain":
         use_sfxv = True
         append_mml = "append_rain.mml"
@@ -434,7 +434,7 @@ def apply_variant(mml, type, name="", variant="_default_", check_size=False):
         if len(seq) > 0x1002:
             mml = orig_mml
     return mml
-    
+
 ############ tierboss
 
 def generate_tierboss_mml(pool):
@@ -442,12 +442,12 @@ def generate_tierboss_mml(pool):
         print("johnnydmad: no tierboss pool present in playlist, falling back")
         return None, None
         # TODO fallback
-        
+
     class TierSong:
         def __init__(self, name, variant):
             self.name = name
             self.variant = variant
-            
+
             self.file = os.path.join(TIERBOSS_MUSIC_PATH, name + ".mml")
             try:
                 with open_fallback(self.file, "r") as f:
@@ -455,9 +455,9 @@ def generate_tierboss_mml(pool):
             except OSError:
                 print(f"tierboss_mml: couldn't load {self.file}")
                 self.mml = ""
-                
+
             self.orig_mml = self.mml
-            
+
             uids = re.search("(?<=#UID )([^;\n]*)", self.mml, re.IGNORECASE)
             self.uids = [s.strip() for s in uids.group(0).split(',')] if uids else []
 
@@ -474,7 +474,7 @@ def generate_tierboss_mml(pool):
             self.remap_table = {}
             for sid in sample_table:
                 self.remap_table[sid] = sid
-                
+
     # 1000 attempts to fuse 3 songs into one. If this fails, fall back to 2, etc
     final_mml = None
     variants_to_use = [["_default_"],
@@ -517,7 +517,7 @@ def generate_tierboss_mml(pool):
                     break
             if retry:
                 continue
-                
+
             # build sample table
             # retry if n>16
             merged_sample_table = {}
@@ -538,20 +538,20 @@ def generate_tierboss_mml(pool):
                 continue
             #print(merged_sample_table)
             #print([t.file for t in tiers])
-            
+
             mml_sample_text = "\n"
             for id, val in merged_sample_table.items():
                 pre, suff = val
                 mml_sample_text += f"{pre}{id:02X}{suff}\n"
             #print(mml_sample_text)
-            
+
             # check sample size
             # retry if n>3746
             memusage = get_spc_memory_usage(mml_sample_text, custompath=TIERBOSS_MUSIC_PATH)
             #print(memusage)
             if memusage > 3746:
                 continue
-                
+
             # regex fix program changes
             for tier in tiers:
                 for old, new in tier.remap_table.items():
@@ -560,7 +560,7 @@ def generate_tierboss_mml(pool):
                     tier.mml = re.sub(f"@{old}", new_text, tier.mml, flags=re.IGNORECASE)
                     tier.mml = re.sub(f"\|{old - 0x20:X}", new_text, tier.mml, flags=re.IGNORECASE)
                 tier.mml = re.sub("\(\|\)", "|", tier.mml)
-                
+
             # regex & merge segments
             if n > 1:
                 keep = {"tier1": "[~`]",
@@ -610,7 +610,7 @@ def generate_tierboss_mml(pool):
                 mml += mml_sample_text
             else:
                 mml = tiers[0].mml
-                
+
             # test build akao sequence
             # retry if n>$1002
             #print(mml)
@@ -622,11 +622,11 @@ def generate_tierboss_mml(pool):
             break
         if final_mml:
             break
-            
+
     for i, tier in enumerate(tiers):
         add_to_spoiler(f"tier{i+1}", mml=tier.orig_mml, fn=tier.file)
         used_song_names.add(song_usage_id(tier.file))
-        
+
     return final_mml
 
 ############ main
@@ -640,12 +640,12 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
     global tracklist_spoiler
     global SUBPATH
     global BASEPATH
-    
+
     if subpath:
         SUBPATH = subpath
         if os.path.isabs(subpath):
             BASEPATH = subpath
-            
+
     # -- load sample configs for normal/legacy
     sample_parser = configparser.ConfigParser()
     sample_parser.read(resource_path(os.path.join(TABLE_PATH,'brr_samples.txt')))
@@ -654,15 +654,15 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
             instmap[int(k, 16)] = v
         except ValueError:
             print(f"warning: invalid entry {k} in brr_samples.txt")
-            
-    legacy_parser = configparser.ConfigParser()   
+
+    legacy_parser = configparser.ConfigParser()
     legacy_parser.read(resource_path(os.path.join(TABLE_PATH,'brr_legacy.txt')))
     for k, v in legacy_parser.items("Samples"):
         try:
             legacy_instmap[int(k, 16)] = v
         except ValueError:
             print(f"warning: invalid entry {k} in brr_legacy.txt")
-    
+
     # -- load map of categories for tracks (i.e. which pool of songs applies to each track)
     try:
         with open_resource(os.path.join(TABLE_PATH,'track_ids.txt'), 'r') as f:
@@ -671,7 +671,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
         print(f"could not open {os.path.join(TABLE_PATH,'track_ids.txt')}, music insertion aborted")
         processing_failed = True
         return inrom
-        
+
     category_tracks, track_categories = {}, {}
     track_id_names.clear()
     track_name_ids.clear()
@@ -691,7 +691,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
         if id in track_id_names:
             print(f"warning: track_ids.txt ({i}): multiple definition of id {id:02X}")
             continue
-            
+
         track_id_names[id] = name
         track_name_ids[name] = id
         if category not in category_tracks:
@@ -704,7 +704,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
     # -- load random choices configuration for categories (playlist file)
     # moved to function for reuse in length test mode
     playlist_map, tierboss_pool = init_playlist(fn=playlist_filename)
-    
+
     track_pools = {}
     intensitytable = {}
     intensitytable["battle"] = {}
@@ -770,7 +770,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
             intensitytable["boss"][song[0]] = intense
         if "battle" in song_categories:
             intensitytable["battle"][song[0]] = epic
-    
+
     # -- retry loop
     processing_complete = False
     attempts = 0
@@ -782,26 +782,26 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
         tracklist_spoiler = {}
 
         tracklist = Tracklist()
-                    
+
         LONGTRACKS = ["ending1", "ending2"]
         SFXTRACKS = ["ruin", "zozo"]
         windy_intro = random.choice([True, False, False])
         if windy_intro:
             SFXTRACKS.append("assault")
         APPENDTRACKS = SFXTRACKS + ["train"]
-            
+
         if attempts >= 1000:
             print("Music randomization failed after 1000 attempts. Your custom music configuration files and/or filters may be too restrictive.")
             return inrom
         attempts += 1
-        
+
         # -- process special cases (battle, opera, tierboss) wrt. choosing tracks
-        
+
         # tierboss
         # processing tierboss first to avoid having to check for used song names
         if "tierboss" in category_tracks:
             tierboss_mml = generate_tierboss_mml(tierboss_pool)
-                        
+
         # battle
         progression = {}
         already_added = set()
@@ -844,9 +844,9 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
                 already_added.add(progression[cat][i])
             if processing_failed:
                 break
-        if processing_failed: 
+        if processing_failed:
             continue
-        
+
         # -- choose tracklist
         for category, tracks in sorted(category_tracks.items()):
             # fixed category - does not randomize, loads from static_music/ only
@@ -886,9 +886,9 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
                 if not ok:
                     processing_failed = True
                     break
-        if processing_failed: 
+        if processing_failed:
             continue
-            
+
         # If we're just simulating pools, finish up and exit here
         if pool_test:
             results = {}
@@ -898,7 +898,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
                     song = f"{song}:{variant}"
                 results[track] = song
             return results
-            
+
         # -- load tracklist files, while...
         #    - for NON-legacy #WAVE, record used samples in a set
         #    - for legacy #WAVE, convert to #BRR
@@ -942,7 +942,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
                     used_sample_ids.add(TRAIN_SAMPLE_ID)
         if processing_failed:
             continue
-            
+
         # -- generate virtual sample listfile for insertmfvi
         sample_virtlist = {}
         for id in used_sample_ids:
@@ -955,7 +955,7 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
             is_long = True if tl_name in LONGTRACKS else False
             v = (fallback_path(tl_entry.file, ext=".mml"), tl_entry.variant, is_sfx, is_long, tl_entry.mml)
             mml_virtlist[k] = v
-            
+
             # Jukebox title
             if tl_name not in category_tracks["fixed"] and tl_name not in category_tracks["opera"]:
                 meta[k] = get_jukebox_title(tl_entry.mml, tl_entry.file)
@@ -970,36 +970,36 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
         except FreeSpaceError:
             print("NOTICE: Rerolling music - not enough free space for last attempt")
             continue
-        
+
         processing_complete = True
-        
+
         # -- we won i think?
     return outrom
-        
+
 #########################################
 
 def process_formation_music_by_table(data, form_music_overrides={}):
-    
+
     o_forms = 0xF6200
     o_formaux = 0xF5900
     o_monsters = 0xF0000
     o_epacks = 0xF5000
-    
+
     with open_resource(os.path.join(TABLE_PATH,"formationmusic.txt"), "r") as f:
         tbl = f.readlines()
-    
+
     table = []
     for line in tbl:
         line = [s.strip() for s in line.split()]
         if len(line) == 2: line.append(None)
         if len(line) == 3: table.append(line)
-    
+
     event_formations = set()
     for i in range(0,256):
         loc = o_epacks + i*4
         event_formations.add(int.from_bytes(data[loc:loc+2], "little"))
         event_formations.add(int.from_bytes(data[loc+2:loc+4], "little"))
-    
+
     for line in table:
         #table format: [formation id] [music bitfield] [force music on/off]
         #value of 'c' forces music on if:
@@ -1011,7 +1011,7 @@ def process_formation_music_by_table(data, form_music_overrides={}):
             fid = int(line[0])
         except ValueError:
             continue
-        
+
         # account for random music settings in other parts of the randomizer
         # ancient cave bosses can be set to 5, 2, or 4
         # superbosses (formations_hidden) can be set to anything 1-5
@@ -1026,14 +1026,14 @@ def process_formation_music_by_table(data, form_music_overrides={}):
             mutation_table = [0, 1, 6, 5, 7, 2, 0, 0]
             line[1] = mutation_table[form_music_overrides[fid]]
             force_music = True
-            
+
         try:
             mbf = int(line[1]) << 3
         except ValueError:
             mbf = 0
         pos = o_formaux + fid*4
         dat = bytearray(data[pos:pos+4])
-        
+
         dat[3] = (dat[3] & 0b11000111) | mbf
         if line[2] == "0":
             dat[1] = dat[1] | 0b00000010
@@ -1054,25 +1054,25 @@ def process_formation_music_by_table(data, form_music_overrides={}):
             dat[1] = dat[1] & 0b11111101
             dat[3] = dat[3] & 0b01111111
         data = byte_insert(data, pos, dat)
-    
+
         #update relevant tables in program code:
         # IDs of songs that pause/resume current song when played: change to battle1-4 and mboss
         data = byte_insert(data, 0x506F9, b"\x24\x5E\x5F\x60\x61")
         # formation battle music table: battle, boss1, boss2, battle2, battle3, dmad123, battle4, mboss
         data = byte_insert(data, 0x2BF3B, b"\x24\x14\x33\x5E\x5F\x3B\x60\x61")
-        
+
     return data
-    
+
 def process_map_music(data):
     #find range of valid track #s
     songcount_byte = 0x53C5E
     max_bgmid = data[songcount_byte]
     max_bgmid -= 4 #extra battles always go last
-    
+
     map_offset = 0x2D8F00
     map_block_size = 0x21
     map_music_byte = 0x1C
-    
+
     #replace track ids in map data
     replacements = {}
     replacements[0x51] = [ #Phantom Forest (forest)
@@ -1115,13 +1115,13 @@ def process_map_music(data):
     replacements[0x00] = [ #Change maps to "continue current music"
         0x29 #Narshe mines 1
         ]
-        
+
     for bgm_id, maps in replacements.items():
         if bgm_id > max_bgmid: continue
         for map_id in maps:
             offset = map_offset + (map_id * map_block_size) + map_music_byte
             data = byte_insert(data, offset, bytes([bgm_id]))
-            
+
     #also replace relevant play song events
     def adjust_event(dat, offset, oldid, newid):
         op_lengths = {}
@@ -1151,7 +1151,7 @@ def process_map_music(data):
             op_lengths[o] = 17
         for o in [0xC7, 0xCF]:
             op_lengths[o] = 18
-        
+
         changes = []
         loc = offset
         while True:
@@ -1182,18 +1182,18 @@ def process_map_music(data):
             else:
                 print("unexpected event op ${:02X} at ${:06X}".format(op, loc))
                 break
-                
+
         #print("full event at ${:06X}:".format(offset))
         #for b in range(offset, loc):
         #    print("{:02X} ".format(dat[b]), end="")
         #print()
-        
+
         for ch in changes:
             #print("at ${:06X}: {:02X} {:02X} -> {:02X}".format(ch[0]-1, dat[ch[0]-1], dat[ch[0]], ch[1]))
             dat = byte_insert(dat, ch[0], bytes([ch[1]]))
-       
+
         return dat
-        
+
     def adjust_entrance_event(dat, mapid, oldid, newid):
         event_offset = 0x0A0000
         entrance_table = 0x11FA00
@@ -1203,26 +1203,26 @@ def process_map_music(data):
         event_offset += (dat[table_offset+2] << 16)
         dat = adjust_event(dat, event_offset, oldid, newid)
         return dat
-        
+
     data = adjust_entrance_event(data, 0xA2, 0x2A, 0x5C) #mobliz
     data = adjust_entrance_event(data, 0xC0, 0x2A, 0x5C) #kohlingen
     data = adjust_event(data, 0xC3B0E, 0x2A, 0x5C) #kohlingen, WoR, locke recruited
-    
+
     data = adjust_event(data, 0xC9A4F, 0x39, 0x5D) #opening mission
-    
+
     # add music conditional event for Narshe Mines 1 map
     event = b"\xC0\x01\x80\x5A\x39\x02" #if you've met arvis, jump to "play Narshe music"
     event += b"\xB2\x01\x9B\x02" #subroutine: put terra, biggs, wedge on magitek armor
     event += b"\xF0\x5D\xFE" #play opening mission track & return
     data = byte_insert(data, 0xC9F1A, event)
     # 3 bytes unused, C9F27 - C9F29
-    
+
     #code from Mines 1 entrance event moved to subroutine
     #Replaces Save Point tutorial event (already dummied out by BC)
     event = b"\x44\x00\xC0\x44\x0E\xC0\x44\x0F\xC0\xFE" #Put terra, biggs, wedge on magitek armor
     data = byte_insert(data, 0xC9B01, event)
     # $12 bytes unused, C9B0B - C9B1C
-    
+
     data = byte_insert(data, 0xC9F1D, b"\x5A\x39\x02")
-    
+
     return data
