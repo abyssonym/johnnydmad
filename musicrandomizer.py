@@ -56,9 +56,7 @@ def resource_path(rel):
     return os.path.normpath(os.path.join(base, SUBPATH, rel))
 
 def open_resource(fn, *args, **kwargs):
-    if os.path.isabs(fn):
-        print(f"warning: {fn}: resource paths should be relative")
-    else:
+    if not os.path.isabs(fn):
         fn = resource_path(fn)
     return open(fn, *args, **kwargs)
 
@@ -226,7 +224,10 @@ def song_variant_id(name, idx):
 
 def init_playlist(fn=DEFAULT_PLAYLIST_FILE):
     playlist_parser = configparser.ConfigParser()
-    plfile = playlist_parser.read(fallback_path(os.path.join(PLAYLIST_PATH, fn)))
+    if os.path.isabs(fn):
+        plfile = playlist_parser.read(fn)
+    else:
+        plfile = playlist_parser.read(fallback_path(os.path.join(PLAYLIST_PATH, fn)))
     if not plfile:
         print(f"Playlist file {fn} empty or not found, falling back to {DEFAULT_PLAYLIST_FILE}")
         playlist_parser.read(fallback_path(os.path.join(PLAYLIST_PATH, DEFAULT_PLAYLIST_FILE)))
@@ -978,21 +979,25 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
 
 #########################################
 
-def process_formation_music_by_table(data, form_music_overrides={}):
+def process_formation_music_by_table(data, form_music=None,
+                                     form_music_overrides={}):
 
     o_forms = 0xF6200
     o_formaux = 0xF5900
     o_monsters = 0xF0000
     o_epacks = 0xF5000
 
-    with open_resource(os.path.join(TABLE_PATH,"formationmusic.txt"), "r") as f:
+    if form_music is None:
+        form_music = os.path.join(TABLE_PATH, form_music)
+
+    with open_resource(form_music, "r") as f:
         tbl = f.readlines()
 
     table = []
     for line in tbl:
         line = [s.strip() for s in line.split()]
         if len(line) == 2: line.append(None)
-        if len(line) == 3: table.append(line)
+        if len(line) >= 3: table.append(line)
 
     event_formations = set()
     for i in range(0,256):
@@ -1055,15 +1060,15 @@ def process_formation_music_by_table(data, form_music_overrides={}):
             dat[3] = dat[3] & 0b01111111
         data = byte_insert(data, pos, dat)
 
-        #update relevant tables in program code:
-        # IDs of songs that pause/resume current song when played: change to battle1-4 and mboss
-        data = byte_insert(data, 0x506F9, b"\x24\x5E\x5F\x60\x61")
-        # formation battle music table: battle, boss1, boss2, battle2, battle3, dmad123, battle4, mboss
-        data = byte_insert(data, 0x2BF3B, b"\x24\x14\x33\x5E\x5F\x3B\x60\x61")
+    #update relevant tables in program code:
+    # IDs of songs that pause/resume current song when played: change to battle1-4 and mboss
+    data = byte_insert(data, 0x506F9, b"\x24\x5E\x5F\x60\x61")
+    # formation battle music table: battle, boss1, boss2, battle2, battle3, dmad123, battle4, mboss
+    data = byte_insert(data, 0x2BF3B, b"\x24\x14\x33\x5E\x5F\x3B\x60\x61")
 
     return data
 
-def process_map_music(data):
+def process_map_music(data, conditional_narshe_mines=True):
     #find range of valid track #s
     songcount_byte = 0x53C5E
     max_bgmid = data[songcount_byte]
@@ -1210,19 +1215,20 @@ def process_map_music(data):
 
     data = adjust_event(data, 0xC9A4F, 0x39, 0x5D) #opening mission
 
-    # add music conditional event for Narshe Mines 1 map
-    event = b"\xC0\x01\x80\x5A\x39\x02" #if you've met arvis, jump to "play Narshe music"
-    event += b"\xB2\x01\x9B\x02" #subroutine: put terra, biggs, wedge on magitek armor
-    event += b"\xF0\x5D\xFE" #play opening mission track & return
-    data = byte_insert(data, 0xC9F1A, event)
-    # 3 bytes unused, C9F27 - C9F29
+    if conditional_narshe_mines:
+        # add music conditional event for Narshe Mines 1 map
+        event = b"\xC0\x01\x80\x5A\x39\x02" #if you've met arvis, jump to "play Narshe music"
+        event += b"\xB2\x01\x9B\x02" #subroutine: put terra, biggs, wedge on magitek armor
+        event += b"\xF0\x5D\xFE" #play opening mission track & return
+        data = byte_insert(data, 0xC9F1A, event)
+        # 3 bytes unused, C9F27 - C9F29
 
-    #code from Mines 1 entrance event moved to subroutine
-    #Replaces Save Point tutorial event (already dummied out by BC)
-    event = b"\x44\x00\xC0\x44\x0E\xC0\x44\x0F\xC0\xFE" #Put terra, biggs, wedge on magitek armor
-    data = byte_insert(data, 0xC9B01, event)
-    # $12 bytes unused, C9B0B - C9B1C
+        #code from Mines 1 entrance event moved to subroutine
+        #Replaces Save Point tutorial event (already dummied out by BC)
+        event = b"\x44\x00\xC0\x44\x0E\xC0\x44\x0F\xC0\xFE" #Put terra, biggs, wedge on magitek armor
+        data = byte_insert(data, 0xC9B01, event)
+        # $12 bytes unused, C9B0B - C9B1C
 
-    data = byte_insert(data, 0xC9F1D, b"\x5A\x39\x02")
+        data = byte_insert(data, 0xC9F1D, b"\x5A\x39\x02")
 
     return data
