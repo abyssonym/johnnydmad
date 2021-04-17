@@ -9,15 +9,15 @@
 #VARIANT ?` tier2
 #VARIANT ?_ tier3
 
-#WAVE 0x20 -- 0x25  #C.Organ
-#WAVE 0x21 -- 0x3b  #P.Organ
-#WAVE 0x22 -- 0x3a  #Maria
-#WAVE 0x23 -- 0x39  #Draco
-#WAVE 0x24 -- 0x14  #Snare
-#WAVE 0x25 -- 0x16  #Timpani
-#WAVE 0x26 -- 0x12  #Cymbal
-#WAVE 0x27 -- 0x24  #Bells
-#WAVE 0x28 -- 0x1C  #Bass
+#BRR 0x20; ../../samples/legacy/25_pipe_organ       , D902, A7A8, FFE0
+#BRR 0x21; ../../samples/legacy/3B_pipe_organ       , 1B00, 9500, FFE0
+#BRR 0x22; ../../samples/legacy/3A_female_voice     , 1302, 29E4, FFE0
+#BRR 0x23; ../../samples/legacy/39_male_voice_2     , 7704, 8800, FFE0
+#BRR 0x24; ../../samples/legacy/14_snare_1          , 0000, 0000, FFE0
+#BRR 0x25; ../../samples/legacy/16_timpani          , 0000, F900, FFE0
+#BRR 0x26; ../../samples/legacy/12_cymbal           , 8C0A, 0000, FFEE
+#BRR 0x27; ../../samples/legacy/24_tubular_bell     , 410D, 8800, FFEA
+#BRR 0x28; ../../samples/legacy/1C_bass_guitar      , 8004, FDA0, FFE0
 
 {1}
 l16 $4441

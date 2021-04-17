@@ -368,7 +368,7 @@ def get_spc_memory_usage(mml, custompath=CUSTOM_MUSIC_PATH, variant="_default_")
         fn = None
         if prgid in imports:
             fn = imports[prgid][0].strip()
-            fn = os.path.join(custompath, fn)
+            fn = resource_path(os.path.join(custompath, fn))
         else:
             brrid = raw_iset[i*2]
             if brrid:
@@ -954,7 +954,13 @@ def process_music(inrom, meta={}, f_chaos=False, f_battle=True, opera=None, even
             k = track_name_ids[tl_name]
             is_sfx = True if tl_name in SFXTRACKS else False
             is_long = True if tl_name in LONGTRACKS else False
-            v = (fallback_path(tl_entry.file, ext=".mml"), tl_entry.variant, is_sfx, is_long, tl_entry.mml)
+            if tl_entry.file:
+                v = (fallback_path(tl_entry.file, ext=".mml"), tl_entry.variant, is_sfx, is_long, tl_entry.mml)
+            else:
+                assert tl_name == 'dmad123'
+                dummy_path = os.path.join(TIERBOSS_MUSIC_PATH, 'NOT_A_REAL_FILE')
+                v = (fallback_path(dummy_path, ext=".mml"), tl_entry.variant, is_sfx, is_long, tl_entry.mml)
+
             mml_virtlist[k] = v
 
             # Jukebox title
