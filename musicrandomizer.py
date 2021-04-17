@@ -1115,11 +1115,13 @@ def process_map_music(data, conditional_narshe_mines=True):
     replacements[0x5D] = [ #Opening magitek sequence (assault)
         0x13, #outside south
         0x27, #outside north
-        0x2A #Tritoch mine room
         ]
-    replacements[0x00] = [ #Change maps to "continue current music"
-        0x29 #Narshe mines 1
-        ]
+
+    if conditional_narshe_mines:
+        replacements[0x5D].append(0x2A) # Tritoch mine room
+        replacements[0x00] = [ #Change maps to "continue current music"
+            0x29 #Narshe mines 1
+            ]
 
     for bgm_id, maps in replacements.items():
         if bgm_id > max_bgmid: continue
