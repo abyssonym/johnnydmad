@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import configparser, argparse, sys, shlex, re, os
 from copy import copy
-import mml2mfvi
+from johnnydmad.mfvitools import mml2mfvi
 
 DEBUG = False
 VERBOSE = False
