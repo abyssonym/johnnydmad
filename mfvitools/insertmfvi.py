@@ -14,16 +14,16 @@ def clean_end():
 def ifprint(text, condition, **kwargs):
     if condition:
         print(text, **kwargs)
-        
+
 def inform(*a, **kw):
     if not args.quiet:
         print(*a, **kw)
-        
+
 def warning(*a, **kw):
     # this does nothing special, but categorizing console output this way may
     # be useful in the future
     print(*a, **kw)
-    
+
 HIROM = 0xC00000
 CONFIG = configparser.RawConfigParser({
         'free_rom_space': '310600-380000',
@@ -53,10 +53,10 @@ edl = None
 
 class FreeSpaceError(Exception):
     pass
-    
+
 class SampleIDError(Exception):
     pass
-    
+
 class Sequence():
     def __init__(self):
         self.filename = None
@@ -71,16 +71,16 @@ class Sequence():
         self.spcrip = False
         self.imports = {}
         self.edl = edl
-        
+
     def init_from_bin(self, fn):
         self.filename = sanitize_path(fn)
         self.filetype = "bin"
-        
+
     def init_from_mml(self, fn, variant=None):
         self.filename = sanitize_path(fn)
         self.variant = variant
         self.filetype = "mml"
-        
+
     def init_from_listfile(self, text):
         text = [s.strip() for s in text.split(',')]
         if not text:
@@ -109,7 +109,7 @@ class Sequence():
                 self.filetype = "mml"
             else:
                 self.filetype = "bin"
-                
+
     def init_from_virtlist(self, dat):
         fn, var, is_sfx, is_long, mml = dat
         self.filename = sanitize_path(fn)
@@ -118,7 +118,7 @@ class Sequence():
         self.is_sfx = is_sfx
         self.is_long = is_long
         self.mml = mml
-        
+
     def load(self):
         if self.filetype == "bin":
             try:
@@ -187,7 +187,7 @@ class Sequence():
                 self.edl = mml2mfvi.get_echo_delay(self.mml, variant=v)
                 if self.edl is None:
                     self.edl = edl
-            
+
 class Sample():
     def __init__(self):
         self.filename = None
@@ -198,7 +198,7 @@ class Sample():
         self.blocksize = None
         self.internalid = None
         self.data_location = None
-        
+
     def init_dummy(self):
         self.filename = "dummy"
         self.brr = b"\x09\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -206,7 +206,7 @@ class Sample():
         self.tuning = b"\xAC\xAB"
         self.loop = b"\x00\x00"
         self.blocksize = 1
-        
+
     def init_from_listfile(self, text):
         text = [s.strip() for s in text.split(',')]
         if not text:
@@ -229,37 +229,37 @@ class Sample():
         except IndexError:
             envtext = "ffe0"
             warning(f"SAMPLEINIT: no envelope data specified for sample {text[0]}, using 15/7/7/0")
-            
+
         self.loop = mml2mfvi.parse_brr_loop(looptext)
         self.tuning = mml2mfvi.parse_brr_tuning(pitchtext)
         self.adsr = mml2mfvi.parse_brr_env(envtext)
-            
+
     def init_internal(self, inrom, id):
         self.internalid = id
-        
+
         loc = offsets['brrtable'] + (id-1) * 3
         offset = from_rom_address(int.from_bytes(inrom[loc:loc+3], "little"))
         header = inrom[offset:offset+2]
         length = int.from_bytes(header, "little")
         self.brr = inrom[offset:offset+2+length]
         self.blocksize = len(self.brr) // 9
-        
+
         loc = offsets['loopdata'] + (id-1) * 2
         self.loop = inrom[loc:loc+2]
         loc = offsets['pitchdata'] + (id-1) * 2
         self.tuning = inrom[loc:loc+2]
         loc = offsets['adsrdata'] + (id-1) * 2
         self.adsr = inrom[loc:loc+2]
-        
+
         self.data_location = offset
         ifprint(f"DEBUG: internal sample {id:02X}: {self.blocksize}blk L={self.loop.hex().upper()} T={self.tuning.hex().upper()} E={self.adsr.hex().upper()}", DEBUG)
-        
+
     def init_from_import(self, importinfo, basepath=""):
         self.filename = os.path.join(basepath, sanitize_path(importinfo[0]))
         self.loop = mml2mfvi.parse_brr_loop(importinfo[1])
         self.tuning = mml2mfvi.parse_brr_tuning(importinfo[2])
         self.adsr = mml2mfvi.parse_brr_env(importinfo[3])
-        
+
     def load(self):
         if not self.internalid and not self.brr:
             brr = None
@@ -302,7 +302,7 @@ class Sample():
                     warning("         BRRs must be a multiple of 9 bytes, with optional 2-byte header")
                 self.brr = len(brr).to_bytes(2, "little") + brr
                 self.blocksize = (len(self.brr) - 2) // 9
-                    
+
 def sanitize_path(in_path):
     drive, path = os.path.splitdrive(in_path)
     sep = os.path.sep if (path and path[0] in ['\\', '/']) else ""
@@ -311,7 +311,7 @@ def sanitize_path(in_path):
     path = path.split('/')
     path = os.path.join(drive, sep, *path)
     return os.path.normpath(path)
-    
+
 def relpath(in_path):
     # NOTE may not produce a valid path, this is for text representation
     if not os.path.isabs(in_path):
@@ -323,7 +323,7 @@ def relpath(in_path):
             r = os.path.relpath(p, start=mei)
             return f"MEI::{r}"
     return os.path.relpath(p)
-        
+
 def from_rom_address(addr):
     # NOTE ROM offset 7E0000-7E7FFF and 7F000-7F7FFF are inaccessible.
     # This is not handled by this program and it will treat them like 7E8000, etc
@@ -332,14 +332,14 @@ def from_rom_address(addr):
     elif addr < 0x400000 and addr >= 0x3E0000:
         addr += 0x400000
     return addr
-    
+
 def to_rom_address(addr):
     if addr < 0x400000:
         addr += 0xC00000
     elif addr >= 0x7E0000 and addr < 0x800000:
         addr -= 0x400000
     return addr
-    
+
 def byte_insert(data, position, newdata, maxlength=0, end=0):
     while position > len(data):
         data += (b"\x00" * (position - len(data)))
@@ -368,7 +368,7 @@ def bytes_to_int(data, reversed=True):
         else:
             n = (n << (8 * i)) + d
     return n
-    
+
 def put_somewhere(romdata, newdata, desc, f_silent=False, bank=None):
     global freespace, spoiler
     if freespace is None:
@@ -400,7 +400,7 @@ def put_somewhere(romdata, newdata, desc, f_silent=False, bank=None):
             warning("ERROR: not enough free space to insert {}\n\n".format(desc))
         raise FreeSpaceError
     return (romdata, start, end)
-            
+
 def init_freespace():
     global freespace
     fs = CONFIG.get('DEFAULT', 'free_rom_space').split()
@@ -425,7 +425,7 @@ def free_space(start, end):
     if freespace is None:
         init_freespace()
     freespace.append((start, end))
-    
+
     newfs = []
     for i, (start, end) in enumerate(sorted(freespace)):
         if newfs:
@@ -464,36 +464,36 @@ def claim_space(startc, endc):
         else:
             newfs.append((start, end))
     freespace = newfs
-    
+
 def repr_freespace():
     text = ""
     for f in freespace:
         text += f"{f[0]:06X} - {f[1]:06X} (0x{f[1]-f[0]:X}), "
     return text.rpartition(',')[0]
-    
+
 ### Testing ASM hack from Myria for per-song EDL loading
 def load_edl_hack(outrom):
     global edl_table_address
-    
+
     edl_table = bytes([edl]) * 256
     outrom, edl_table_address, _ = put_somewhere(outrom, edl_table, "EDL Table")
-    
+
     hack = b"\xE2\x30\x9C\x43\x21\x9C\x42\x21\xA6\x01\xBF" + to_rom_address(edl_table_address).to_bytes(3, "little") +  b"\xC2\x10\x8D\x41\x21\xA9\xFC\x8D\x40\x21\xCD\x40\x21\xD0\xFB\x1A\x29\x7F\x85\x1E\xA5\x02\x5C\xA8\x01\xC5"
     outrom, hack_address, _ = put_somewhere(outrom, hack, "EDL Table Hack Code")
     hook = b"\x5C" + to_rom_address(hack_address).to_bytes(3, "little")
     hook_address = 0x501A4
-    
+
     outrom = byte_insert(outrom, hook_address, hook)
-    
+
     inform(f"Myria's EDL Table hack: code is at {hack_address:06X}, table is at {edl_table_address:06X}")
-    
+
     return outrom
-    
+
 ### Testing basic ASM hack to avoid dangerous behavior in "shadow" lookahead functions
 def load_shadow_hack(outrom):
     spcprg_rel_offset = 0x50510
     hackmode = "ffmode"
-    
+
     if hackmode == "safeshadow":
         # Dummy out E3 and F5 commands in shadow command switch
         outrom = byte_insert(outrom, 0x50B06, b"\xEB")
@@ -512,9 +512,9 @@ def load_shadow_hack(outrom):
         # Add disable roll to jump table
         outrom = byte_insert(outrom, spcprg_rel_offset + 0x18C7, b"\xDE\x15")
         inform(f"No shadowing hack loaded (unsafe??)")
-        
+
     return outrom
-    
+
 def remap_brr(outrom, newloc):
     if newloc > 0xFFFF or newloc < 0:
         warning(f"invalid memory offset for remap-BRR: {newloc:04X}, cancelling remap operation")
@@ -530,7 +530,7 @@ def remap_brr(outrom, newloc):
     newbytes = newloc.to_bytes(2, "little")
     outrom = byte_insert(outrom, offset1, newbytes)
     outrom = byte_insert(outrom, offset2, newbytes)
-    
+
     ## Adjust SFX BRR pointers
     o_ptrblock = 0x52018
     ptrblock = outrom[o_ptrblock:o_ptrblock+0x20]
@@ -539,22 +539,22 @@ def remap_brr(outrom, newloc):
         ptr = int.from_bytes(ptrblock[i*2:i*2+2], "little") - original1 + newloc
         new_ptrblock.extend(ptr.to_bytes(2, "little"))
     outrom = byte_insert(outrom, o_ptrblock, new_ptrblock)
-    
+
     inform(f"SPC sample memory remapped to {newloc:04X}")
     return outrom
-    
+
 def max_blocks(edl):
-    base = MAX_BLOCKS_BASE    
+    base = MAX_BLOCKS_BASE
     brr_ram_size = MAX_BLOCKS_BASE * 9
     brr_ram_size -= (edl - 5) * 0x800
     if remapbrr:
         brr_ram_size += 0x4800 - remapbrr
     return brr_ram_size // 9
-    
+
 def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, freespace=None, brrpath=None, validate_only=False, quiet=False):
     global args
     global remapbrr
-    
+
     # fill out a dummy argument object so we can proceed without crashing if bypassing command line
     if argparam:
         args = argparam
@@ -581,14 +581,14 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         args.brrcount = "0x3F"
         args.brrpath = "samples"
         args.seqpath = ""
-        
+
         purge_original_samples = True
-        
+
     if brrpath:
         args.brrpath = brrpath
     args.seqpath = sanitize_path(args.seqpath)
     args.brrpath = sanitize_path(args.brrpath)
-    
+
     if not args.freespace:
         args.freespace = ["300000-3FFFFF"]
     CONFIG['DEFAULT']['free_rom_space'] = ""
@@ -605,7 +605,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
     offsets['loopptr'] = 0x5041C
     offsets['pitchptr'] = 0x5049C
     offsets['adsrptr'] = 0x504DE
-    
+
     # Handle header in input ROM
     romheader = b""
     loc = offsets['engine']
@@ -619,9 +619,9 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         clean_end()
     else:
         inform("found unheadered ROM.")
-        
+
     outrom = bytearray(inrom)
-    
+
     # Set up data points in input ROM
     loc = offsets["bgmptrs"]
     offsets['bgmtable'] = from_rom_address(int.from_bytes(inrom[loc:loc+3], "little"))
@@ -635,7 +635,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
     offsets['pitchdata'] = from_rom_address(int.from_bytes(inrom[loc:loc+3], "little"))
     loc = offsets["adsrptr"]
     offsets['adsrdata'] = from_rom_address(int.from_bytes(inrom[loc:loc+3], "little"))
-    
+
     bgmcount = inrom[offsets['bgmcount']]
     bgmtable_loc = None
     brrtable_loc = None
@@ -666,12 +666,12 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             remapbrr = int(args.remapbrr, 16)
     except ValueError:
         warning(f"REMAPBRR: invalid offset value {args.remapbrr}")
-        
+
     ifprint(f"  Number of BGM: {bgmcount} (0x{bgmcount:02X})", VERBOSE)
     ifprint(f"  Number of BRR: {brrcount} (0x{brrcount:02X})", VERBOSE)
     o = {k: hex(v) for k, v in offsets.items()}
     inform()
-    
+
     # Set default EDL
     global edl
     edl = 5
@@ -687,7 +687,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             warning("requested EDL value too high ({args.edl}), leaving original ROM value")
         else:
             outrom[EDL_OFFSET] = edl
-        
+
     edl_table_address = None
     if args.hack:
         outrom = load_edl_hack(outrom)
@@ -695,7 +695,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         outrom = load_shadow_hack(outrom)
     if remapbrr:
         outrom = remap_brr(outrom, remapbrr)
-        
+
     # Load samples from source ROM into sample_defs
     sample_defs = {}
     if not purge_original_samples:
@@ -703,7 +703,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             id = i + 1
             sample_defs[id] = Sample()
             sample_defs[id].init_internal(inrom, id)
-        
+
     # Parse list files
     listfiles = configparser.ConfigParser()
     if args.listfiles:
@@ -712,7 +712,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                 listfiles.read(fn)
             except FileNotFoundError:
                 warning(f"LISTFILES: couldn't read {fn}")
-            
+
     sequence_listdefs = {}
     sample_listdefs = {}
     if 'Seq' in listfiles:
@@ -733,7 +733,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         sample_listdefs.update(listfiles['Instruments'])
     if virt_sample_list:
         sample_listdefs.update(virt_sample_list)
-        
+
     ## List format for sequences:
     # -- Header in brackets must be [Seq], [Sequences], [Playlist], or [Songs] (case sensitive)
     # -- ID: filepath, options
@@ -759,12 +759,12 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             continue
         sequence_defs[id] = Sequence()
         sequence_defs[id].init_from_listfile(line)
-    
+
     if virt_seq_list:
         for id, dat in virt_seq_list.items():
             sequence_defs[id] = Sequence()
             sequence_defs[id].init_from_virtlist(dat)
-            
+
     ## List format for samples:
     # same as beyondchaos for now
     # can use headers [Samples], [BRR], [BRRs], [Instruments]
@@ -780,7 +780,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         sample_defs[id] = Sample()
         sample_defs[id].init_from_listfile(line)
         sample_defs[id].load()
-        
+
     # Grab MML and seq info from command line
     if args.mmlfiles:
         for fn, id in args.mmlfiles:
@@ -807,7 +807,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                 continue
             sequence_defs[id] = Sequence()
             sequence_defs[id].init_from_bin(fn)
-        
+
     # Parse all MMLs / load all sequences
     for id, seq in sequence_defs.items():
         if seq is None:
@@ -817,7 +817,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         if seq.filetype:
             varitext = f" ({seq.variant})" if seq.variant else ""
             inform(f"{id:02X}: Loaded {relpath(seq.filename)}{varitext} as {seq.filetype}")
-            
+
     # Traverse sequences and:
     # - Arrange sample files from MML into free ids
     # - Update sequence inst tables based on final sample id layout
@@ -832,7 +832,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                 imported.load()
                 if not imported.brr:
                     continue
-                
+
                 this_sampleid = None
                 for sid, smp in sorted(sample_defs.items()):
                     if imported.brr == smp.brr:
@@ -852,7 +852,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                         raise SampleIDError
                 if this_sampleid:
                     seq.inst = byte_insert(seq.inst, (k-0x20)*2, this_sampleid.to_bytes(2, "little"))
-                
+
     # Pad with empty sample entries if option to do so is selected
     if args.pad_samples:
         pad_brr_id = None
@@ -864,7 +864,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                     sample_defs[i].internalid = pad_brr_id
                 else:
                     pad_brr_id = i
-            
+
     # Build metadata tables
     looptable, pitchtable, adsrtable = b"", b"", b""
     for k, v in sample_defs.items():
@@ -872,7 +872,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             looptable = byte_insert(looptable, (k-1)*2, v.loop)
             pitchtable = byte_insert(pitchtable, (k-1)*2, v.tuning)
             adsrtable = byte_insert(adsrtable, (k-1)*2, v.adsr)
-            
+
     # Check if metadata needs to be moved
     move_metadata = False
     meta_length = len(adsrtable)
@@ -899,7 +899,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         for metatype in ['loopdata', 'pitchdata', 'adsrdata']:
             o = offsets[metatype]
             free_space(o, o + brrcount * 2)
-            
+
     # Check if sequence or sample tables need to be expanded
     expand_bgm, expand_brr = False, False
     if len(sequence_defs) and max(sequence_defs.keys()) > bgmcount - 1:
@@ -914,7 +914,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         expand_brr = True
         o = offsets['brrtable']
         free_space(o, o + (brrcount) * 3)
-        
+
     # Determine space required for fixed-location items
     metablock_length, seqblock_length, brrblock_length = 0, 0, 0
     meta_loc, sequence_loc, sample_loc = None, None, None
@@ -937,7 +937,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         for k, v in sample_defs.items():
             if v.brr and not v.internalid:
                 brrblock_length += len(v.brr)
-            
+
     if args.o_seqs:
         try:
             sequence_loc = int(args.o_seqs, 16)
@@ -952,18 +952,18 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             warning(f"WARNING: Invalid sample location '{args.o_brrs}'")
         if sample_loc is not None:
             claim_space(sample_loc, sample_loc + brrblock_length - 1)
-            
+
     # Relocate bgm / brr / inst tables
     o_brrtable = offsets['brrtable']
     o_bgmtable = offsets['bgmtable']
     o_insttable = offsets['insttable']
-    
+
     if brrtable_loc or expand_brr:
         new_brrcount = max(sample_defs.keys())
         ifprint(f"DEBUG: BRR expanded from {brrcount} to {new_brrcount}", DEBUG)
         expansion = b"\x00" * (new_brrcount - brrcount)
         brrtable = inrom[o_brrtable : o_brrtable + (brrcount) * 3] + expansion * 3
-        
+
         if brrtable_loc is None:
             ifprint(f"RELOCATION: Free space before inserting 0x{len(brrtable):X} bytes BRR: {repr_freespace()}", DEBUG)
             try:
@@ -989,12 +989,12 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             outrom = byte_insert(outrom, brrtable_loc, brrtable)
             o_brrtable = brrtable_loc
             claim_space(brrtable_loc, brrtable_loc + len(brrtable))
-            
+
         o = offsets['brrptrs']
         outrom = int_insert(outrom, o, to_rom_address(o_brrtable), 3)
         outrom = int_insert(outrom, o+6, to_rom_address(o_brrtable+1), 3)
-        outrom = int_insert(outrom, o+12, to_rom_address(o_brrtable+2), 3)    
-        
+        outrom = int_insert(outrom, o+12, to_rom_address(o_brrtable+2), 3)
+
     if bgmtable_loc or expand_bgm:
         if len(sequence_defs):
             new_bgmcount = max(bgmcount, max(sequence_defs.keys()) + 1)
@@ -1004,7 +1004,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         expansion = b"\x00" * (new_bgmcount - bgmcount)
         bgmtable = inrom[o_bgmtable : o_bgmtable + bgmcount * 3] + expansion * 3
         insttable = inrom[o_insttable : o_insttable + bgmcount * 0x20] + expansion * 0x20
-        
+
         if bgmtable_loc is None:
             ifprint(f"RELOCATION: Free space before inserting 0x{len(bgmtable):X} bytes BGM: {repr_freespace()}", DEBUG)
             outrom, o_bgmtable, e = put_somewhere(outrom, bgmtable, "BGM sequence pointer table")
@@ -1020,7 +1020,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             outrom = byte_insert(outrom, inst_loc, insttable)
             o_insttable = inst_loc
             claim_space(inst_loc, inst_loc + len(insttable))
-            
+
         o = offsets['bgmptrs']
         outrom = int_insert(outrom, o, to_rom_address(o_bgmtable), 3)
         outrom = int_insert(outrom, o+6, to_rom_address(o_bgmtable+1), 3)
@@ -1029,7 +1029,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         outrom = int_insert(outrom, o, to_rom_address(o_insttable), 3)
         o = offsets['bgmcount']
         outrom = int_insert(outrom, o, new_bgmcount, 1)
-        
+
     # Insert metadata
     if meta_loc or move_metadata:
         if meta_loc is None:
@@ -1051,12 +1051,12 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                 o_pitchtable = meta_loc + 0x202
                 o_adsrtable = meta_loc + 0x402
             outrom = byte_insert(outrom, meta_loc, metablock)
-            
+
         inform(f"METADATA: Output ROM table locations: loop {o_looptable:06X}, tuning {o_pitchtable:06X}, envelope {o_adsrtable:06X}")
         for metapointer, metatable in [('loopptr', o_looptable), ('pitchptr', o_pitchtable), ('adsrptr', o_adsrtable)]:
             loc = offsets[metapointer]
             outrom = byte_insert(outrom, loc, to_rom_address(metatable).to_bytes(3, 'little'))
-            
+
     # Insert BRRs and update BRR pointers
     for id, smp in sample_defs.items():
         if smp.internalid or not smp.brr:
@@ -1070,7 +1070,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             inform(f"Inserted sample {relpath(smp.filename)} (0x{len(smp.brr):X} bytes) at ${s:06X}")
             sample_loc += len(smp.brr)
         smp.data_location = s
-        
+
     for id, smp in sample_defs.items():
         if not smp.data_location and smp.internalid:
             if smp.internalid in sample_defs and sample_defs[smp.internalid].data_location:
@@ -1080,7 +1080,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             outrom = byte_insert(outrom, loc, to_rom_address(smp.data_location).to_bytes(3, "little"))
         else:
             warning(f"Error: no sample data location for sample {id} ({smp.filename})")
-        
+
     # Insert sequences, sequence pointers, and instrument tables
     validation_results = []
     for id, seq in sequence_defs.items():
@@ -1100,7 +1100,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
                     brr_blocks_used += sample_defs[seq.inst[i*2]].blocksize
                 except TypeError:
                     pass
-        
+
         # Write seq data
         if sequence_loc is None:
             outrom, s, e = put_somewhere(outrom, seq.sequence, f"seq {id:02X}: {seq.filename}")
@@ -1110,7 +1110,7 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
             s = sequence_loc
             seqtext = f"Inserted sequence {relpath(seq.filename)} at ${s:06X}"
             sequence_loc += len(seq.sequence)
-        
+
         if brr_blocks_used > max_blocks(seq.edl):
             warning(seqtext)
             warning(f"**OVERFLOW**: Uses {brr_blocks_used} / {max_blocks(seq.edl)} BRR blocks (EDL {seq.edl})")
@@ -1118,30 +1118,30 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
         else:
             inform(seqtext)
             inform(f"        Uses {brr_blocks_used} / {max_blocks(seq.edl)} BRR blocks (EDL {seq.edl})")
-        
+
         validation_results.append((seq.filename, valid_seq, valid_smp))
-        
+
         # Write seq pointer
         loc = o_bgmtable + id * 3
         outrom = byte_insert(outrom, loc, to_rom_address(s).to_bytes(3, "little"))
         ifprint(f"DEBUG: seq pointer {id:02X} is {to_rom_address(s).to_bytes(3, 'little').hex().upper()} at {loc:06X}", DEBUG)
-        
+
         # Write inst table
         loc = o_insttable + id * 0x20
         outrom = byte_insert(outrom, loc, seq.inst)
-        
+
         # Write EDL table if applicable
         if edl_table_address:
             outrom[edl_table_address + id] = seq.edl
 
     if validate_only:
         return validation_results
-        
+
     # Reattach header and write ROM
     inform()
     if len(outrom) % 0x10000:
         outrom += b"\x00" * (0x10000 - (len(outrom) % 0x10000))
-        
+
     if len(outrom) > 0x400000:
         if outrom[0xFFD5] == 0x31:
             outrom = byte_insert(outrom, 0xFFD5, b"\x35")
@@ -1151,19 +1151,19 @@ def insertmfvi(inrom, argparam=None, virt_sample_list=None, virt_seq_list=None, 
     if len(outrom) != len(inrom):
         inform(f"ROM file size is now 0x{len(outrom):06X} bytes")
     outrom = romheader + outrom
-    
+
     return outrom
-    
+
 if __name__ == "__main__":
     print("mfvitools Music and Instrument Insertion Tool for Final Fantasy VI")
     print()
-    
+
     parser = argparse.ArgumentParser(description="Inserts a specified set of BRR instrument samples into a Final Fantasy VI ROM.")
     filegroup = parser.add_argument_group("File parameters")
     outgroup = parser.add_argument_group("Output file configuration")
     ingroup = parser.add_argument_group("Input file configuration")
     hackgroup = parser.add_argument_group("Additional ROM patches and hacks")
-    
+
     filegroup.add_argument('-i', '--in', help="set input ROM", dest="infile")
     filegroup.add_argument('-o', '--out', help="set output ROM", dest="outfile")
     filegroup.add_argument('-l', '--list', action="append", help="import samples and/or sequences based on an import list file", metavar="FILENAME", dest="listfiles")
@@ -1188,7 +1188,7 @@ if __name__ == "__main__":
     ingroup.add_argument('-B', '--brrcount', default="0x3F", help="define number of instruments contained in source ROM (default: %(default)s)", metavar="NN")
     filegroup.add_argument('-s', '--brrpath', default="", help="define base path for samples loaded from import list files")
     filegroup.add_argument('-p', '--seqpath', default="", help="define base path for sequences loaded from import list files")
-    
+
     def print_no_file_selected_help():
         print("No actions selected!")
         print("You must specify at least one file to import.")
@@ -1197,14 +1197,14 @@ if __name__ == "__main__":
         print("    -m FILENAME ID          MML file, default variant")
         print("    -m FILENAME?VARIANT ID  MML file, specific variant")
         print("    -r FILENAME ID          Binary sequence file")
-    
+
     argv = list(sys.argv[1:])
     while not argv:
         print_no_file_selected_help()
         text_in = input("> ")
         argv += shlex.split(text_in)
     args, unknown = parser.parse_known_args(argv)
-    
+
     while True:
         if args.listfiles or args.mmlfiles or args.binfiles:
             break
@@ -1212,7 +1212,7 @@ if __name__ == "__main__":
         text_in = input("> ")
         argv += shlex.split(text_in)
         args, unknown = parser.parse_known_args(argv)
-        
+
     if args.infile is None:
         print("Enter source ROM filename.")
         print("Default: ff6.smc")
@@ -1221,14 +1221,14 @@ if __name__ == "__main__":
             infile = "ff6.smc"
     else:
         infile = args.infile
-    
+
     try:
         with open(infile, "br") as f:
             inrom = f.read()
     except FileNotFoundError:
         print(f"Error reading file {infile}")
         clean_end()
-        
+
     if args.outfile is None:
         print()
         outfile_default = infile.split('.')
@@ -1241,13 +1241,13 @@ if __name__ == "__main__":
             outfile = outfile_default
     else:
         outfile = args.outfile
-    
+
     print()
-    
+
     outrom = insertmfvi(inrom, argparam=args)
-    
+
     #snip
-    
+
     try:
         with open(outfile, "wb") as f:
             f.write(outrom)
@@ -1255,6 +1255,6 @@ if __name__ == "__main__":
         print(f"Couldn't write to output file {outfile}")
         clean_end()
     print(f"Wrote to {outfile} successfully.")
-    
+
     clean_end()
-    
+

@@ -9,8 +9,8 @@ note_tbl = {
     "b": 0xB,
     "^": 0xC,
     "r": 0xD }
-    
-length_tbl = { 
+
+length_tbl = {
     1   : (0, 0xC0),
     2   : (1, 0x60),
     3   : (2, 0x40),
@@ -61,7 +61,7 @@ command_tbl = {
     ("%i", 0): 0xFB, #ignore master volume (ff6)
     #("%j", 1): 0xF6 - jump to marker, segment continues
     ("%k", 1): 0xD9, #set transpose
-    ("%l0", 0): 0xE5,#disable legato 
+    ("%l0", 0): 0xE5,#disable legato
     ("%l1", 0): 0xE4,#enable legato
     ("%n0", 0): 0xD1,#disable noise
     ("%n1", 0): 0xD0,#enable noise
