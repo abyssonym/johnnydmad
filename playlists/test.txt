@@ -418,7 +418,6 @@ ffx_calm:         chaos, prelude, falcon, ruin
 ffx_decision:     chaos, prelude, falcon, ruin
 ffx_gagazet:      chaos, prelude, falcon, ruin
 ffx_luca:         chaos, prelude, falcon, ruin
-ffx_seymour:      chaos, prelude, falcon, ruin
 ffx_via:          chaos, prelude, falcon, ruin
 ffx_zanarkand:    chaos, prelude, falcon, ruin
 fz_port:          chaos, prelude, falcon, ruin
@@ -574,7 +573,6 @@ tyr_theme:        chaos, prelude, falcon, ruin
 wa_zed:           chaos, prelude, falcon, ruin
 wc2_human1:       chaos, prelude, falcon, ruin
 wc2_orc1:         chaos, prelude, falcon, ruin
-xc1_names:        chaos, prelude, falcon, ruin
 xc1_valakn:       chaos, prelude, falcon, ruin
 xc2_morardain:    chaos, prelude, falcon, ruin
 xc2_tantal:       chaos, prelude, falcon, ruin
