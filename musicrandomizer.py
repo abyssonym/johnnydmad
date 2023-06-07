@@ -20,7 +20,7 @@ PLAYLIST_PATH = 'playlists'
 TABLE_PATH = 'tables'
 DEFAULT_PLAYLIST_FILE = 'default.txt'
 LEGACY_LOADBRR_PATH = "../../samples/"
-BASEPATH = os.getcwd()
+BASEPATH = '.'
 SUBPATH = ""
 # For LEGACY_LOADBRR_PATH, note that the filenames from tables/legacy.txt that
 #   are appended to this already contain the "legacy/" bit. Path is relative
