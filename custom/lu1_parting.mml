@@ -9,7 +9,7 @@
 #WAVE 0x23 0x35 acoustic bass guitar
 #WAVE 0x28 0xAD fret
 
-#def init= t80 %x160 %v40 %b0,85 %f0,0
+#def init= t80 %x208 %v40 %b0,85 %f0,0
 
 #def violin= |0 'v' p80 o5 m24,9,215 %r8
 #def flute= |1 'f' p88 o5 m48,18,239 %r10
@@ -31,7 +31,7 @@
 {1} 'init' %e1 $
 ['violin' l8
 rd+(g+b) a+f+4c+    g+4.(f+16g+16)f+2
-%r18^%r8 d+(g+b) a+f+4c+    <d+4.(c+16d+16)(c+>a+4)(b16<c+16)
+%r18^%r8 d+(g+b) a+f+4d+    <d+4.(c+16d+16)(c+>a+4)(b16<c+16)
 ## 5
 d+>g+g+<d+c+4>(ba+)   b4a+g+2g+16g+16
 f+b16b.^2f+16f+16   f+<c+16c+16^2>(bj2a+)]<c+)
@@ -63,7 +63,7 @@ l8 [>b<f+bf+ >a+<f+a+f+ >a<eae >g+<d+g+d+
 {4} %e1 &2r
 'flute' l8 $$5 [
 rd+g+b a+f+4c+    g+4.(f+16g+16)f+2
-%r18^%r8 d+g+b a+f+4c+    <d+4.(c+16d+16)c+>a+4(b16<c+16)
+%r18^%r8 d+g+b a+f+4d+    <d+4.(c+16d+16)c+>a+4(b16<c+16)
 ## 5
 d+>g+g+<(d+c+4)>(ba+)   (b4a+g+2)g+16g+16
 f+b16b.^2f+16f+16   f+<c+16(c+16^2>bj2a+)]<c+)

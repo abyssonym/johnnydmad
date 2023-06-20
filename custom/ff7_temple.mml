@@ -23,8 +23,10 @@
 #def ob= |5 p84
 #def oo= o5
 
+#def init= t110 %x232 %v50 %b0,100 %f0,0
+
 {1}
-l16t110%v50%x192%b0,100%f0,0%e1 $1 v104p62@32o3e8o4e8g8b8o3e8o4e8g8o5c8  
+l16'init'%e1 $1 v104p62@32o3e8o4e8g8b8o3e8o4e8g8o5c8  
 o3e8o4e8g8o5c+8o3e8o4e8g8o5c8  o3e8o4e8g8b8o3e8o4e8g8o5c8  o3e8o4e8g8o5c+8o3e8o4e8g8o5c8  
 o3a8o4e8a8o5c8o3a8o4f8a8o5c8  o3a8o4f+8a8o5c8o3a8o4f8a8o5c8  o3a8o4e8a8o5c8o3a8o4f8a8o5c8  
 o3a8o4f+8a8o5c8o3a8o4f8a8o5c8  o3a8o4e8a8o5c8o3a8o4f8a8o5c8  o3a8o4f+8a8o5c8o3a8o4f8a8o5c8  
@@ -80,7 +82,7 @@ v100,0^2mr1  ^1  ^1  ^1
 
 l16
 {6}
-l16%e1 $4 v113p70@35r1  ^1  ^1  ^1  
+l16%e1 $4 v113p70@35%y0r1  ^1  ^1  ^1  
 ^1  o4a1  r1  ^1  
 ^1  a1  r1  ^1  
 ^1  ^1  ^1  ^1  
@@ -88,10 +90,10 @@ l16%e1 $4 v113p70@35r1  ^1  ^1  ^1
 ^1  a1  r1  ^1  
 a1  ^2r2  a1  ^2r2  
 a1  ^2r2  a1  ^2r2  
-<d1  ^1  a1  ^2^4d4  
-a4^8ara1  ^2d1  ^1  
-d1  ^2^4>a4  o5d4^8drd1  ^4>a4o5d4^8dr  
-d1  ^4>a4o4d4^8dr  d1  ^4>a4
+g1  ^1  <d1  ^2^4>a4
+<d4^8drd1  ^2>g1  ^1  
+<d1  ^2^4>a4  <d4^8drd1  ^4>a4<d4^8dr  
+d1  ^4>a4<d4^8dr  d1  ^2
 ;4
 
 l16

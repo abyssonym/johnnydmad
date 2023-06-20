@@ -1,8 +1,10 @@
-#TITLE Arni Village
+#TITLE Arni (Home World)
 #ALBUM Chrono Cross
 #COMPOSER Yasunori Mitsuda
 #ARRANGED Gi Nattak & emberling
 # Converted from binary by mfvitools
+
+#SHORTNAME CC Arni (Home)
 
 #WAVE 0x20 -- 0x34 guitar
 #WAVE 0x21 -- 0x62 strings
@@ -13,38 +15,38 @@
 #def guitar= |0 o5
 #def strings= |1 o4 %r3
 #def piccolo= |2 o3
-#def bass= |3 o6 %s3 %r10
+#def bass= |3 o6 %y0%s3 %r10
 
-#def gv= v60
-#def fv= v48
-#def sv= v18
-#def bv= v112
-#def sf= v100,18
+#def gv= v88
+#def fv= v68
+#def sv= v26
+#def bv= v125
+#def sf= v100,26
 #def sa= 'sv*v.4''sf'
 
 #cdef ( %l1
 #cdef ) %l0
 
-#drum "b"=5d+ |4 v43 p63 %r25 m18,9
-#drum "c"=5g+ |4 v43 p63 %r26 m12,7
-#drum "d"=6d+ |4 v43 p63 %r26
-#drum "b-"=5d+ |4 v43 p63 %r25 m18,9
-#drum "c-"=5g+ |4 v43 p63 %r26 m12,7
-#drum "d-"=6d+ |4 v43 p63 %r26
+#drum "b"= 5d+ |4 v56 p63 %r25 m18,9
+#drum "c"= 5g+ |4 v56 p63 %r26 m12,7
+#drum "d"= 6d+ |4 v56 p63 %r26
+#drum "b-"=5d+ |4 v56 p63 %r25 m18,9
+#drum "c-"=5g+ |4 v56 p63 %r26 m12,7
+#drum "d-"=6d+ |4 v56 p63 %r26
 
 
 {1}
-l16t120%v50%x255%b0,100%f0,0%e1
+l16t120%v50%b0,100%f0,0%e1
 'gv'p63'guitar-o1' a+4<
-$1 g4^8g32g+g32f8d+8f2  
-d+4g4^8g32g+g32f8d+8  f4a+4^8g+8g4  ^8g32g+g32f8d+8f2  d+4f2^8r2  
+$1 g4^8g24g+24g24f8d+8f2  
+d+4g4^8g24g+24g24f8d+8  f4a+4^8g+8g4  ^8g24g+24g24f8d+8f2  d+4f2^8r2  
 ^4^8^32g4^8^^32a+4  r32g+4^8^^32f4r32g4  ^8^^32a+4r32g+8^^32<d+4d4  
 r32d+8^^32>a+4r32g+4g4  ^8^^32d+8f8r32g4^8^^32g+4  r32f4^8^^32d+4r32d+2  
 r4...
 
 'fv''piccolo' p94
 ^4<m48,18,201f4f+8g+rd+1  ^8c+16r16d+4a+2  ^4(g+32g+8^^32)f+4f8f+16r16  
-<c+1  >(b32b8^^32)a+1  g+4a+4f2  ^8(f32f+f32)d+1  
+<c+1  >(b32b8^^32)a+1  g+4a+4f2  ^8(f24f+24f24)d+1  
 ^4^8r8d+4f4  f+4c+2^4  a+4^8^^32(a+32g+4)g+2  ^4g4g+4a+4  
 b4^^32r8^32b4<c+2  >f+4<d+4^8^rd+4  f4f+8^(f32f+32f4)f1  
 ^2d+1  ^4^8^^32r32
@@ -105,7 +107,7 @@ r1r1r1"c1^1^1 ^1^1^1 ^1.c1.^2.c24"
 
 l16
 {3}
-l16'bv'p64%e1 
+l16'bv'p64%e0
 'bass-o3' r8a+8<
 $8 d+2  ^8d+8>g+2^4  
 <d+2^8d+8>g+4  ^8<d+8a+8g+8d+2  ^8d+8>g+2^4  a+2<f8^^32r32d+2  

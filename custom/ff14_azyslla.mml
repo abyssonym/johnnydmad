@@ -1,12 +1,12 @@
 #TITLE Order Yet Undeciphered
-#ALBUM Final Fantasy XIV Heavensward
+#ALBUM Final Fantasy X|V: Heavensward
 #COMPOSER Masayoshi Soken
 #ARRANGED emberling
 
 ########## ------------------
 #SHORTNAME FF14 Azys Lla
 
-#BRR  0x20 0xC4; brr/cs16_synth, 9F0C, F270, F 7 7 0
+#BRR  0x20 0xC4; ../samples/legacy/cs16_synth, 9F0C, F270, F 7 7 0
 #WAVE 0x21 0xB0 - was 0x3B - porgan
 #WAVE 0x22 0xB5 - was 0x9B - rorgan
 #WAVE 0x23 0x63 - was 0x49 - string
@@ -18,7 +18,7 @@
 #WAVE 0x2C 0x2D - was 0x8E - crash
 #WAVE 0x2E 0x3C - was 0x8F - hihat
 
-#def init= t110 %x255 %v35 %b0,100 %f0,0
+#def init= t110 %v35 %b0,100 %f0,0
 
 #def bz= |0 'z' o5
 #def po= |1 'o' o5

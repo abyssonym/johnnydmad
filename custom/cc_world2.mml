@@ -4,7 +4,7 @@
 #ARRANGED emberling
 
 #WAVE 0x20 0x52 ebass_synthetic_fingered
-#WAVE 0x21 0x70 violin_simple
+#WAVE 0x21 0x70 violin_vib
 #WAVE 0x22 0x75 choir_soprano
 #WAVE 0x23 0x36 guitar_classic
 #WAVE 0x24 0x01 piano_octave6
@@ -32,7 +32,7 @@
 {1} 'init'
 'bs-o2' l16
 r4. a8<
-$##2
+##2
 m12,2c2..c24m4,2^48^>
 a+2^.r32<f8>a+8<f8>
 f2^8^32r32<cf24m10,2^12m2,-2^8

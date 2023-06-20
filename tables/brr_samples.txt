@@ -11,26 +11,26 @@
 08: 08_ct_lowpia      , 7B03, 5200  , FFEA, {111}  [-12] Bass Piano
 09: 09_fm_gpia6       , BA0C, c+-08 , FFEF, {433}  [+12] G.Piano6 LQ
 
-# ZITHERS ETC                                                         -------------
-10: 10_smr_bpia4            , 6F18  , -7.086 , FFEC    , {883}  [   ] BrightPiano4
-11: 11_smr_bpia3            , 2913  , +2.875 , FFED    , {572}  [   ] BrightPiano3
-12: 12_thg_harpsi           , 9B04  , *1.324 , EF8F    , {137}  [   ] Harpsichord
-13: 13_ct_12stg             , D413  , BB74   , FFEE    , {574}  [   ] Bright 12str
-14: 14_rh_dulci             , 330C  , -2.210 , F 7 7 0A, {351}  [   ] Dulcimer
-15: 15_ff10_santur4         , @229bl, ^b+20  , FFEC    , {237}  [   ] Santur
-16: 16_rh_clavi             , 4F05  , -3.398 , F 7 7 0F, {166}  [-24] Clavinet
-17: 17_ff7_cleang           , @0283bl, *0.770, FFEA    , {290}  [-12] Clean Elec.G
+# ZITHERS ETC                                                        -------------
+10: 10_smr_bpia4            , 6F18  , -7.086, FFEC    , {883}  [   ] BrightPiano4
+11: 11_smr_bpia3            , 2913  , +2.875, FFED    , {572}  [   ] BrightPiano3
+12: 12_thg_harpsi           , 9B04  , *1.324, EF8F    , {137}  [   ] Harpsichord
+13: 13_ct_12stg             , D413  , BB74  , FFEE    , {574}  [   ] Bright 12str
+14: 14_rh_dulci             , 330C  , -2.210, F 7 7 0A, {351}  [   ] Dulcimer
+15: 15_ff10_santur4         , @229bl, ^b+20 , FFEC    , {237}  [   ] Santur
+16: 16_rh_clavi             , 4F05  , -3.398, F 7 7 0F, {166}  [-24] Clavinet
+17: 17_rh_softrep           , B706  , -2.210, F 4 3 0A, {195}  [   ] Soft Rock EP
+18: 18_ff7_choreplq         , @75bl ,  ^d-26, F 1 3 0B, {105}  [+12] Chorus EP LQ
+19: 19_ff7_chorep           , @279bl, *0.750, FFEA    , {545}  [+12] Chorus Epiano
 
 # BELLS ETC                                                            -------------
-18: 18_rh_softrep             , B706  , -2.210, F 4 3 0A, {195}  [   ] Soft Rock EP
-19: 19_ff7_chorep             , @279bl, *0.750, FFEA    , {545}  [+12] Chorus Rhodes
 20: 20_tn_celesta             , 3804  , *.807 , FFEF    , {142}  [   ] Celesta/ToyP
 21: 21_ff5_glock              , F504  , FE48  , FFF0    , {297}  [+36] Glockenspiel
 22: 22_rs3_vibra              , 4605  , E100  , FFEC    , {152}  [+12] Vibraphone
 23: 23_ff6_marimb             , 5406  , A960  , FFEC    , {195}  [   ] Marimba
 24: 24_smr_marimb             , F300  , -0.25 , FFF4    , {36}   [   ] Marimba LQ
 25: 25_rh_xylo                , CE07  , -2.210, F 3 1 0A, {226}  [   ] Xylophone
-26: 26_smr_steeld             , F207  , +4.773, FFD3    , {229}  [+12] Steel Drum
+26: 26_smr_steeld             , F207  , A8A6  , FFD3    , {229}  [   ] Steel Drum
 27: 27_rs1_bell               , D104  , E300  , FFF2    , {141}  [+12] Melodic Bell
 28: 28_ff7_tbell              , @268bl, *0.505, FFEB    , {317}  [+12] Tubular Bell
 29: 29_sd2_tbell              , 3B01  , F200  , FF8D    , {49}   [+12] T.Bell Alt.
@@ -45,6 +45,7 @@
 36: 36_ff7_classig          , @319bl, *0.605, FFEB, {330}  [   ] Classical Gtr
 
 # ELECTRIC GUITARS                                                   -------------
+38: 38_ff7_cleang            , @283bl, *0.770, FFEA   , {290}  [-12] Clean Elec.G
 39: 39_ctx_jcm12st           , @628bl, d-48  , FFE0   , {642}  [   ] SoloOverdrive
 40: 40_ebr_synod             , 5202  , *1.316, F 7 7 0, {69}   [+12] SynthOverdrive
 41: 41_ff6_s50dist           , FA05  , 29C0  , FFE0   , {444}  [-24] S50 DistFuzz
@@ -102,13 +103,14 @@
 79: 79_sd2x_ovox           , @1bl   , ^g+   , FEE0, {452}  [   ] Oct Vox Pad
 
 # BRASS                                                               -------------
+7E: 7E_sc88horn-rs            , @434bl, -2.210, F 0 7 0, {436}  [+12] PowerHornLQ
 7F: 7F_ebr_hobo               , 0A02  , *0.657, F 7 7 0, {61}   [   ] ReedyHornLQ
 80: 80_ff4_tpx2               , D002  , b+19  , F 7 7 0, {88}   [   ] OctLQ Trumpet
 81: 81_ct_tpet                , 9C06  , E16C  , F 2 7 0, {192}  [   ] Trumpet
 82: 82_ff4_tpet               , 8C01  , b+19  , F 7 7 0, {48}   [   ] Trumpet LQ
 83: 83_ff6rs_tuba             , 5304  , FDA0  , FFE0   , {131}  [-12] Euphonium
 84: 84_ff7_horn               , @311bl, *0.880, F 3 5 0, {323}  [   ] Horn
-85: 85_rh_horn                , 721E  , -2.210, F 0 7 0, {870}  [   ] Power horn
+85: 85_sc88horn               , 721E  , -2.210, F 0 7 0, {870}  [   ] Power horn
 86: 86_mq_horn                , C906  , ^e+20 , F 0 7 0, {196}  [   ] Mellow horn
 87: 87_misc_rscbrass1         , @151bl, ^a-15 , FFE0   , {301}  [   ] Brass Section
 88: 88_misc_rscbrasso         , @301bl, ^a-15 , FFE0   , {451}  [   ] Octave Brass
@@ -137,7 +139,7 @@ A7: A7_ff6_flute              , 4104, E158  , FFE0, {123}  [+12] Flute LQ
 
 # ORGANS                                                        -------------
 B0: B0_ff6_pipeorgl     , 1B00 , f++37 , FFE0    , {299}  [-12] Pipe Organ HQ
-B1: B1_l2_pipeorg       , 1C02 , *1.094, FFE0    , {65}   [   ] Pipe Organ LQ
+B1: B1_l2_pipeorg       , 1C02 , g+35  , FFE0    , {65}   [   ] Pipe Organ LQ
 B2: B2_ff7_polyorg      , @57bl, *0.733, FFE0    , {67}   [   ] PolyOrgan
 B3: B3_fmgh_rockorg     , 6E04 , ^e-51 , FFE0    , {151}  [   ] Rock Organ
 B4: B4_ff6_percorg      , 3B01 , BE90  , FFE0    , {116}  [-12] Perc Organ
@@ -179,13 +181,14 @@ E3: E3_smr_mtpet             , 7101  , -7.25, FFE0    , {44}   [   ] Mute Trumpe
 0D: 0D_rs3_trancebdr       , 0000, 0000 , FFE0, {303}  [   ] synth kick
 
 # SNARE                                                        -------------
+0E: 0E_smr_brush            , 9306, +0    , FCE0, {187}  [   ] Brush Snare    
 0F: 0F_ff7_trash            , @0bl, *0.579, FFE0, {315}  [   ] Trashcan
 1A: 1A_sd3_msnare           , CA08, +0    , FFE0, {250}  [   ] March Snare
 1B: 1B_ff6_snare            , 0000, 0000  , FFE0, {250}  [   ] Orch.Snare
 1C: 1C_rs3_snare            , 0000, 0000  , FFE0, {437}  [   ] Rock Snare
 1D: 1D_l2_hsnare            , 9807, *0.500, FFE0, {216}  [   ] Hard Snare
 1E: 1E_smr_synsn            , 9306, +0    , FFE0, {187}  [   ] Synth Snare
-1F: 1F_smr_brush            , 9306, +0    , FCE0, {187}  [   ] Brush Snare    
+1F: 1F_sd3_jsnare           , 9306, +3    , FFE0, {187}  [   ] Martial Snare
 
 # CYMBALS                                                        -------------
 2C: 2C_thg_clash          , 6207, *.618 , FFEE    , {344}  [   ] Orch.Clash
@@ -229,7 +232,6 @@ BB: BB_sd3_boom  , FA05, -2   , FFEB, {409}  [   ] Distant Boom
 7B: 7B_top_congas           , 0000, *.523, FFEC, {69}   [   ] Conga Slap
 7C: 7C_thg_conga            , 7E00, d+48 , FFF2, {100}  [   ] M.Conga @18
 7D: 7C_thg_conga            , 7E00, d+48 , FFF7, {100}  [   ] M.Conga @23
-7E: 7C_thg_conga            , 7E00, d+48 , FFFC, {100}  [   ] M.Conga @28
 
 # ACCENTS                                                -------------
 8A: 8A_bf2_clave      , 0000, *1.000, FFE0, {51}   [   ] Side Stick NQ
